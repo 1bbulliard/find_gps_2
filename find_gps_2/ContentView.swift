@@ -9,25 +9,33 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
+    @ObservedObject private var locationManager = LocationManager()
+    
+    
     var body: some View {
+        let coordinate = self.locationManager.location != nil
+        ? self.locationManager.location!.coordinate :
+        CLLocationCoordinate2D()
+        
        MapView()
+        Text("Lat: \(coordinate.latitude) Long: \(coordinate.longitude)")
     }
 }
-
+private var locationManager = LocationManager()
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
 
-class LocationManager: NSObject   {
+class LocationManager: NSObject, ObservableObject   {
     
     private let locationManager = CLLocationManager()
     var location: CLLocation? = nil
     
     override init() {
         super.init()
-      //  self.locationManager.delegate = self
+        self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLDistanceFilterNone
         self.locationManager.distanceFilter = kCLDistanceFilterNone
         self.locationManager.requestWhenInUseAuthorization()
@@ -64,4 +72,5 @@ final class Coordinator: NSObject, MKMapViewDelegate {
         self.control = control
     }
 }
+
 
